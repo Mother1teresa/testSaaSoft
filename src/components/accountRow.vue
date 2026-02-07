@@ -9,34 +9,15 @@ const emit = defineEmits<{
 }>();
 
 const form = ref<Account>({...props.account});
-const labelsInput = ref(
-  props.account.labels.map(l => l.text).join("; ")
-);
+const labelsInput = ref(props.account.labels.map(l => l.text).join("; "));
 
 watch(
   () => props.account,
   value => {
     form.value = {...value};
     labelsInput.value = value.labels.map(l => l.text).join("; ");
-    validate();
   },
   {deep: true, immediate: true}
-);
-
-watch(
-  form,
-  (value) => {
-    if (!value) return;
-    validate();
-    const hasData =
-      value.login.trim() !== "" ||
-      value.labels.length > 0 ||
-      (value.type === "local" && value.password?.trim() !== "");
-    if (hasData) {
-      emit("update", value);
-    }
-  },
-  {deep: true}
 );
 
 function validate() {
@@ -46,15 +27,29 @@ function validate() {
   }
   const hasLogin = form.value.login.trim().length > 0 && form.value.login.length <= 100;
   const hasPassword =
-    form.value.type === "ldap" || 
-    (form.value.password !== null && form.value.password.length > 0 && form.value.password.length <= 100);
+    form.value.type === "ldap" ||
+    (!!form.value.password && form.value.password.length <= 100);
+  form.value.isValid = Boolean(hasLogin && hasPassword);
+}
 
-  form.value.isValid = hasLogin && hasPassword;
+function fieldError(field: "login" | "password") {
+  if (!form.value.touched) return false;
+  if (field === "login") return form.value.login.trim() === "";
+  if (field === "password" && form.value.type === "local") return !form.value.password?.trim();
+  return false;
 }
 
 function onTypeChange() {
   form.value.touched = true;
   form.value.password = form.value.type === "local" ? "" : null;
+  validate();
+  if (form.value.isValid) emit("update", {...form.value});
+}
+
+function onLoginBlur() {
+  form.value.touched = true;
+  validate();
+  if (form.value.isValid) emit("update", {...form.value});
 }
 
 function onLabelsBlur(event: FocusEvent) {
@@ -65,24 +60,26 @@ function onLabelsBlur(event: FocusEvent) {
     .slice(0, 50)
     .split(";")
     .map(text => ({text: text.trim()}))
-    .filter(label => label.text.length > 0)
+    .filter(label => label.text.length > 0);
+
+  labelsInput.value = input.value;
+  validate();
+  if (form.value.isValid) emit("update", {...form.value});
 }
 </script>
 
 <template>
-  <div class="row" :class="{error: form.touched && !form.isValid, ldap: form.type === 'ldap'}">
-    <input v-model="labelsInput" placeholder="Значение" @blur="onLabelsBlur" maxlength="50"/>
+  <div class="row" :class="{error: !form.isValid && form.touched, ldap: form.type === 'ldap'}">
+    <input v-model="labelsInput" placeholder="Метки" @blur="onLabelsBlur" maxlength="50"/>
 
     <select v-model="form.type" @change="onTypeChange">
       <option value="local">Локальная</option>
       <option value="ldap">LDAP</option>
     </select>
 
-    <input v-model="form.login" placeholder="Значение" @blur="form.touched = true" maxlength="100"/>
+    <input v-model="form.login" placeholder="Логин" @blur="onLoginBlur" maxlength="100"/>
 
-    <input v-show="form.type === 'local'" type="password" v-model="form.password" placeholder="Пароль" @blur="form.touched = true" maxlength="100"/>
-
-    <!-- <div v-else /> -->
+    <input v-show="form.type === 'local'" type="password"  v-model="form.password"  placeholder="Пароль" @blur="onLoginBlur" maxlength="100"/>
 
     <button class="remove" @click="emit('remove', form.id)">
       <img src="/public/icon/icons8-tr-24.gif" alt="Удалить" />
@@ -101,6 +98,10 @@ function onLabelsBlur(event: FocusEvent) {
 
 .row.ldap {
   grid-template-columns: 2fr 1fr 4fr 40px;
+}
+
+input.error {
+  border-color: red;
 }
 
 .row.error input,

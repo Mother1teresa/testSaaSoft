@@ -3,8 +3,8 @@ import { ref } from "vue";
 import AccountRow from "@/components/accountRow.vue";
 import type { Account } from "@/types/account";
 
-const accounts = ref<Account[]>(JSON.parse(localStorage.getItem("accounts") || "[]")
-    .filter((a: Account) => a.login.trim() !== "" || a.labels.length > 0 || (a.type === "local" && a.password?.trim() !== "")));
+const savedAccounts = JSON.parse(localStorage.getItem("accounts") || "[]") as Account[];
+const accounts = ref<Account[]>(savedAccounts);
 
 function persist() {
   localStorage.setItem("accounts", JSON.stringify(accounts.value));
@@ -23,24 +23,19 @@ function addAccount() {
 }
 
 function updateAccount(account: Account) {
-  const index = accounts.value.findIndex((a) => a.id === account.id);
+  const index = accounts.value.findIndex(a => a.id === account.id);
   if (index !== -1) {
-    const isEmpty =
-      account.login.trim() === "" &&
-      ((account.type === "ldap") || (account.password?.trim() === "")) &&
-      account.labels.length === 0;
-    if (isEmpty) {
-      accounts.value.splice(index, 1);
-    } else {
-      accounts.value[index] = account;
+    const hasLogin = account.login.trim().length > 0;
+    const hasPassword = account.type === "ldap" || (!!account.password?.trim());
+    if (hasLogin && hasPassword) {
+      accounts.value[index] = {...account};
+      persist();
     }
-
-    persist();
   }
 }
 
 function removeAccount(id: number) {
-  accounts.value = accounts.value.filter((a) => a.id !== id);
+  accounts.value = accounts.value.filter(a => a.id !== id);
   persist();
 }
 </script>
@@ -49,7 +44,6 @@ function removeAccount(id: number) {
   <div class="accounts">
     <div class="top">
       <h1 class="title">Учетная запись</h1>
-
       <button class="add" @click="addAccount">+</button>
     </div>
 
@@ -127,7 +121,7 @@ function removeAccount(id: number) {
 }
 
 .line img {
-    width: 18px;
-    height: 18px;
+  width: 18px;
+  height: 18px;
 }
 </style>

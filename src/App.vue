@@ -31,7 +31,7 @@ input::placeholder {
 }
 
 select {
-  height: 30px;
+  height: 31px;
   padding: 2px 8px;
   border-radius: 6px;
   font-size: 12px;
