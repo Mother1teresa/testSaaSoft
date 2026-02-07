@@ -69,7 +69,7 @@ function onLabelsBlur(event: FocusEvent) {
 </script>
 
 <template>
-  <div class="row" :class="{error: !form.isValid && form.touched, ldap: form.type === 'ldap'}">
+  <div class="row" :class="{ldap: form.type === 'ldap'}">
     <input v-model="labelsInput" placeholder="Метки" @blur="onLabelsBlur" maxlength="50"/>
 
     <select v-model="form.type" @change="onTypeChange">
@@ -77,9 +77,9 @@ function onLabelsBlur(event: FocusEvent) {
       <option value="ldap">LDAP</option>
     </select>
 
-    <input v-model="form.login" placeholder="Логин" @blur="onLoginBlur" maxlength="100"/>
+    <input v-model="form.login" placeholder="Логин" @blur="onLoginBlur" :class="{ error: fieldError('login') }" maxlength="100"/>
 
-    <input v-show="form.type === 'local'" type="password"  v-model="form.password"  placeholder="Пароль" @blur="onLoginBlur" maxlength="100"/>
+    <input v-show="form.type === 'local'" type="password"  v-model="form.password"  placeholder="Пароль" @blur="onLoginBlur"  :class="{ error: fieldError('password') }" maxlength="100"/>
 
     <button class="remove" @click="emit('remove', form.id)">
       <img src="/public/icon/icons8-tr-24.gif" alt="Удалить" />
@@ -97,7 +97,7 @@ function onLabelsBlur(event: FocusEvent) {
 }
 
 .row.ldap {
-  grid-template-columns: 2fr 1fr 4fr 40px;
+  grid-template-columns: 2fr 1fr 4.05fr 40px;
 }
 
 input.error {
