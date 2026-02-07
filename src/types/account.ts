@@ -10,4 +10,5 @@ export interface Account {
     login: string
     password: string | null
     isValid: boolean
+    touched: boolean
 }

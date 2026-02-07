@@ -15,6 +15,7 @@ import AccountsForm from "@/components/accountForm.vue";
 
 html {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: 16px;
 }
 
 input {
@@ -31,7 +32,7 @@ input::placeholder {
 
 select {
   height: 30px;
-  padding: 0 4px;
+  padding: 2px 8px;
   border-radius: 6px;
   font-size: 12px;
   border: 1px solid rgb(154, 154, 229);
@@ -40,6 +41,14 @@ select {
   justify-content: space-between;
   display: flex;
   align-items: center; */
+}
+select {
+  padding-right: 28px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9L12 15L18 9' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
 }
 
 /* select::picker(select) {
