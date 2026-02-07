@@ -55,7 +55,7 @@ function onLabelsBlur(event: FocusEvent) {
   <div class="row" :class="{ error: !form.isValid }">
     <input
       :defaultValue="form.labels.map(l => l.text).join('; ')"
-      placeholder="Метки"
+      placeholder="Значение"
       @blur="onLabelsBlur"
     />
 
@@ -64,7 +64,7 @@ function onLabelsBlur(event: FocusEvent) {
       <option value="ldap">LDAP</option>
     </select>
 
-    <input v-model="form.login" placeholder="Логин" />
+    <input v-model="form.login" placeholder="Значение" />
 
     <input
       v-if="form.type === 'local'"
@@ -73,12 +73,11 @@ function onLabelsBlur(event: FocusEvent) {
       placeholder="Пароль"
     />
 
-    <div v-else></div>
+    <div v-else />
 
-   <button @click="emit('remove', form.id)">
-      <img src="/public/icon/icons8-tr-24.gif" alt="" />
+    <button class="remove" @click="emit('remove', form.id)">
+      <img src="/public/icon/icons8-tr-24.gif" alt="Удалить" />
     </button>
-    
   </div>
 </template>
 
@@ -94,5 +93,17 @@ function onLabelsBlur(event: FocusEvent) {
 .row.error input,
 .row.error select {
   border-color: red;
+}
+
+.remove {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+}
+
+.remove img{
+  width: 100%;
+  height: 100%;
 }
 </style>
