@@ -46,8 +46,9 @@ function validate() {
   }
   const hasLogin = form.value.login.trim().length > 0 && form.value.login.length <= 100;
   const hasPassword =
-    form.value.type === "ldap" ||
-    (form.value.password && form.value.password.length > 0 && form.value.password.length <= 100);
+    form.value.type === "ldap" || 
+    (form.value.password !== null && form.value.password.length > 0 && form.value.password.length <= 100);
+
   form.value.isValid = hasLogin && hasPassword;
 }
 
